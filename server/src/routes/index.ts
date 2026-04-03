@@ -1,0 +1,10 @@
+export { healthRoutes } from "./health.js";
+export { newsroomRoutes } from "./newsrooms.js";
+export { agentRoutes } from "./agents.js";
+export { storyRoutes } from "./stories.js";
+export { beatRoutes } from "./beats.js";
+export { assignmentRoutes } from "./assignments.js";
+export { approvalRoutes } from "./approvals.js";
+export { dashboardRoutes } from "./dashboard.js";
+export { costRoutes } from "./costs.js";
+export { activityRoutes } from "./activity.js";
