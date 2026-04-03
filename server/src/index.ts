@@ -273,18 +273,23 @@ async function main() {
   const server = createServer(app);
   setupWebSocketServer(server);
 
+  const hasApiKey = !!config.anthropicApiKey;
+
   server.listen(port, () => {
     logger.info(`
 
-  ┌─────────────────────────────────────┐
-  │                                     │
-  │   NEWSDESK                          │
-  │   AI Newsroom Orchestration         │
-  │                                     │
-  │   API:  http://localhost:${port}      │
-  │   UI:   http://localhost:${port}      │
-  │                                     │
-  └─────────────────────────────────────┘
+  ┌─────────────────────────────────────────┐
+  │                                         │
+  │   NEWSDESK                              │
+  │   AI Newsroom Orchestration             │
+  │                                         │
+  │   API:  http://localhost:${port}          │
+  │   UI:   http://localhost:${port}          │
+  │                                         │
+  │   Orchestrator: POST /api/orchestrator  │
+  │   Claude API:   ${hasApiKey ? "configured ✓" : "not set (dry-run only)"}         │
+  │                                         │
+  └─────────────────────────────────────────┘
 
     `);
   });
