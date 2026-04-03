@@ -15,6 +15,7 @@ import {
   dashboardRoutes,
   costRoutes,
   activityRoutes,
+  orchestratorRoutes,
 } from "./routes/index.js";
 
 export async function createApp(db: Db, opts: { uiMode: "none" | "static" | "vite-dev"; serverPort: number }) {
@@ -35,6 +36,7 @@ export async function createApp(db: Db, opts: { uiMode: "none" | "static" | "vit
   api.use(dashboardRoutes(db));
   api.use(costRoutes(db));
   api.use(activityRoutes(db));
+  api.use("/orchestrator", orchestratorRoutes(db));
   app.use("/api", api);
 
   app.use("/api", (_req, res) => {

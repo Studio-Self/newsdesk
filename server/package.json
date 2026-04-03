@@ -12,6 +12,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.82.0",
     "@newsdesk/db": "workspace:*",
     "@newsdesk/shared": "workspace:*",
     "detect-port": "^2.1.0",
