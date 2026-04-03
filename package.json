@@ -1,0 +1,25 @@
+{
+  "name": "newsdesk",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server/src/index.ts",
+    "dev:server": "tsx server/src/index.ts",
+    "dev:ui": "pnpm --filter @newsdesk/ui dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "db:generate": "pnpm --filter @newsdesk/db generate",
+    "db:migrate": "pnpm --filter @newsdesk/db migrate"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5",
+    "tsx": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.15.4"
+}
