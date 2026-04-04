@@ -1,10 +1,18 @@
 # Newsdesk
 
+Open source. Self-hosted. No account required.
+
 AI-powered newsroom orchestration platform. Specialized agents (reporter, fact-checker, copy editor, publisher, social editor) collaborate to produce and publish news content through a structured editorial pipeline.
 
 ## Quickstart
 
-Requires **Node.js >= 20** and **pnpm** (`corepack enable`).
+```bash
+npx newsdesk-ai onboard --yes
+```
+
+If you already have Newsdesk configured, rerunning `onboard` keeps the existing config in place.
+
+Or manually:
 
 ```bash
 git clone https://github.com/studio-self/newsdesk.git
@@ -13,13 +21,9 @@ pnpm install
 pnpm dev
 ```
 
-That's it. The database auto-provisions (embedded PostgreSQL), and both the API and UI are served at [http://localhost:3100](http://localhost:3100).
+This starts the API and UI at [http://localhost:3100](http://localhost:3100). An embedded PostgreSQL database is created automatically — no setup required.
 
-To use AI agents, set your Anthropic API key:
-
-```bash
-echo "ANTHROPIC_API_KEY=sk-ant-..." > .env
-```
+**Requirements:** Node.js 20+, pnpm 9.15+
 
 ## Commands
 
@@ -37,6 +41,7 @@ echo "ANTHROPIC_API_KEY=sk-ant-..." > .env
 
 ```
 newsdesk/
+├── cli/             # npx onboarding CLI
 ├── server/          # Express 5 API backend
 ├── ui/              # React 19 + Vite frontend
 ├── packages/
