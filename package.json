@@ -4,8 +4,6 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server/src/index.ts",
-    "dev:server": "tsx server/src/index.ts",
-    "dev:ui": "pnpm --filter @newsdesk/ui dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "test": "vitest",
