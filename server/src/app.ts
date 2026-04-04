@@ -16,6 +16,17 @@ import {
   costRoutes,
   activityRoutes,
   orchestratorRoutes,
+  authRoutes,
+  membershipRoutes,
+  taskRoutes,
+  goalRoutes,
+  projectRoutes,
+  documentRoutes,
+  routineRoutes,
+  secretRoutes,
+  agentConfigRoutes,
+  assetRoutes,
+  budgetPolicyRoutes,
 } from "./routes/index.js";
 
 export async function createApp(db: Db, opts: { uiMode: "none" | "static" | "vite-dev"; serverPort: number }) {
@@ -27,6 +38,7 @@ export async function createApp(db: Db, opts: { uiMode: "none" | "static" | "vit
   // Mount API routes
   const api = Router();
   api.use("/health", healthRoutes(db));
+  api.use("/auth", authRoutes(db));
   api.use("/newsrooms", newsroomRoutes(db));
   api.use(agentRoutes(db));
   api.use(storyRoutes(db));
@@ -37,6 +49,16 @@ export async function createApp(db: Db, opts: { uiMode: "none" | "static" | "vit
   api.use(costRoutes(db));
   api.use(activityRoutes(db));
   api.use("/orchestrator", orchestratorRoutes(db));
+  api.use(membershipRoutes(db));
+  api.use(taskRoutes(db));
+  api.use(goalRoutes(db));
+  api.use(projectRoutes(db));
+  api.use(documentRoutes(db));
+  api.use(routineRoutes(db));
+  api.use(secretRoutes(db));
+  api.use(agentConfigRoutes(db));
+  api.use(assetRoutes(db));
+  api.use(budgetPolicyRoutes(db));
   app.use("/api", api);
 
   app.use("/api", (_req, res) => {

@@ -1,6 +1,6 @@
 import { and, eq, sql, gte } from "drizzle-orm";
 import type { Db } from "@newsdesk/db";
-import { stories, agents, approvals, costEvents, qualityScores } from "@newsdesk/db";
+import { stories, agents, approvals, costEvents, qualityScores, editorialTasks, projects, goals } from "@newsdesk/db";
 import type { DashboardSummary } from "@newsdesk/shared";
 
 export function dashboardService(db: Db) {
@@ -61,6 +61,24 @@ export function dashboardService(db: Db) {
         .select({ avg: sql<number>`coalesce(avg(${qualityScores.score}), 0)::int` })
         .from(qualityScores);
 
+      // Open tasks
+      const [taskCount] = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(editorialTasks)
+        .where(and(eq(editorialTasks.newsroomId, newsroomId), eq(editorialTasks.status, "open")));
+
+      // Active projects
+      const [projectCount] = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(projects)
+        .where(and(eq(projects.newsroomId, newsroomId), eq(projects.status, "active")));
+
+      // Active goals
+      const [goalCount] = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(goals)
+        .where(and(eq(goals.newsroomId, newsroomId), eq(goals.status, "active")));
+
       return {
         pipelineCounts,
         activeAgents: agentCounts?.active ?? 0,
@@ -70,6 +88,9 @@ export function dashboardService(db: Db) {
         avgCostPerArticleCents: avgCost?.avg ?? 0,
         storiesPublishedToday: publishedToday?.count ?? 0,
         avgQualityScore: avgQuality?.avg ?? 0,
+        openTasks: taskCount?.count ?? 0,
+        activeProjects: projectCount?.count ?? 0,
+        activeGoals: goalCount?.count ?? 0,
       };
     },
   };

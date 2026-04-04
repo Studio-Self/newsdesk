@@ -6,6 +6,16 @@ export * from "./assignment.js";
 export * from "./approval.js";
 export * from "./quality.js";
 export * from "./live.js";
+export * from "./user.js";
+export * from "./task.js";
+export * from "./goal.js";
+export * from "./project.js";
+export * from "./document.js";
+export * from "./routine.js";
+export * from "./secret.js";
+export * from "./asset.js";
+export * from "./budget.js";
+export * from "./agent_config.js";
 
 export interface AgentRun {
   id: string;
@@ -64,4 +74,7 @@ export interface DashboardSummary {
   avgCostPerArticleCents: number;
   storiesPublishedToday: number;
   avgQualityScore: number;
+  openTasks: number;
+  activeProjects: number;
+  activeGoals: number;
 }

@@ -23,4 +23,28 @@ export const queryKeys = {
   },
   costs: (newsroomId: string) => ["costs", newsroomId] as const,
   activity: (newsroomId: string) => ["activity", newsroomId] as const,
+  tasks: {
+    list: (newsroomId: string) => ["tasks", newsroomId] as const,
+    detail: (id: string) => ["tasks", "detail", id] as const,
+    comments: (id: string) => ["tasks", "comments", id] as const,
+  },
+  goals: {
+    list: (newsroomId: string) => ["goals", newsroomId] as const,
+    detail: (id: string) => ["goals", "detail", id] as const,
+  },
+  projects: {
+    list: (newsroomId: string) => ["projects", newsroomId] as const,
+    detail: (id: string) => ["projects", "detail", id] as const,
+  },
+  documents: {
+    list: (newsroomId: string) => ["documents", newsroomId] as const,
+    detail: (id: string) => ["documents", "detail", id] as const,
+  },
+  routines: {
+    list: (newsroomId: string) => ["routines", newsroomId] as const,
+    detail: (id: string) => ["routines", "detail", id] as const,
+  },
+  secrets: {
+    list: (newsroomId: string) => ["secrets", newsroomId] as const,
+  },
 };

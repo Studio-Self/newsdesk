@@ -6,9 +6,17 @@ export type LiveEventType =
   | "agent:status_changed"
   | "agent:run_started"
   | "agent:run_completed"
+  | "agent:budget_exceeded"
   | "approval:requested"
   | "approval:decided"
-  | "activity:new";
+  | "activity:new"
+  | "task:created"
+  | "task:updated"
+  | "task:completed"
+  | "goal:updated"
+  | "project:updated"
+  | "document:updated"
+  | "routine:triggered";
 
 export interface LiveEvent {
   type: LiveEventType;
