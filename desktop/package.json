@@ -1,0 +1,69 @@
+{
+  "name": "@newsdesk/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/main.mjs",
+  "scripts": {
+    "dev": "node build.mjs && electron .",
+    "build": "node build.mjs",
+    "dist": "pnpm build && electron-builder --mac",
+    "dist:universal": "pnpm build && electron-builder --mac --universal"
+  },
+  "dependencies": {
+    "@newsdesk/server": "workspace:*",
+    "@newsdesk/db": "workspace:*",
+    "@newsdesk/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "electron": "^35.0.1",
+    "electron-builder": "^26.0.12",
+    "esbuild": "^0.25.4",
+    "@types/node": "^24.6.0",
+    "typescript": "^5.7.3"
+  },
+  "build": {
+    "appId": "com.newsdesk.app",
+    "productName": "Newsdesk",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../ui/dist",
+        "to": "ui-dist",
+        "filter": ["**/*"]
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["arm64", "x64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["arm64", "x64"]
+        }
+      ],
+      "darkModeSupport": true,
+      "hardenedRuntime": true,
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mac.plist"
+    },
+    "dmg": {
+      "title": "Newsdesk",
+      "contents": [
+        { "x": 130, "y": 220 },
+        { "x": 410, "y": 220, "type": "link", "path": "/Applications" }
+      ]
+    },
+    "nodeGypRebuild": false,
+    "npmRebuild": true
+  }
+}

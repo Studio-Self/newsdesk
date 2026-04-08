@@ -9,7 +9,9 @@
     "test": "vitest",
     "test:run": "vitest run",
     "db:generate": "pnpm --filter @newsdesk/db generate",
-    "db:migrate": "pnpm --filter @newsdesk/db migrate"
+    "db:migrate": "pnpm --filter @newsdesk/db migrate",
+    "desktop:dev": "pnpm --filter @newsdesk/ui build && pnpm --filter @newsdesk/desktop dev",
+    "desktop:dist": "pnpm --filter @newsdesk/ui build && pnpm --filter @newsdesk/desktop dist"
   },
   "devDependencies": {
     "typescript": "^5.7.3",
