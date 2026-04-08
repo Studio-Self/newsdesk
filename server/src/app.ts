@@ -29,7 +29,7 @@ import {
   budgetPolicyRoutes,
 } from "./routes/index.js";
 
-export async function createApp(db: Db, opts: { uiMode: "none" | "static" | "vite-dev"; serverPort: number }) {
+export async function createApp(db: Db, opts: { uiMode: "none" | "static" | "vite-dev"; serverPort: number; uiDistPath?: string }) {
   const app = express();
 
   app.use(express.json({ limit: "5mb" }));
@@ -68,7 +68,7 @@ export async function createApp(db: Db, opts: { uiMode: "none" | "static" | "vit
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
   if (opts.uiMode === "static") {
-    const uiDist = path.resolve(__dirname, "../../ui/dist");
+    const uiDist = opts.uiDistPath ?? path.resolve(__dirname, "../../ui/dist");
     if (fs.existsSync(path.join(uiDist, "index.html"))) {
       const indexHtml = fs.readFileSync(path.join(uiDist, "index.html"), "utf-8");
       app.use(express.static(uiDist));

@@ -7,6 +7,28 @@ import { loadConfig } from "./config.js";
 import { setupWebSocketServer } from "./realtime/ws.js";
 import { logger } from "./middleware/logger.js";
 
+export interface StartServerOptions {
+  /** Directory for embedded PostgreSQL data (defaults to ./postgres-data) */
+  dataDir?: string;
+  /** HTTP server port (defaults to PORT env or 3100) */
+  port?: number;
+  /** PostgreSQL port (defaults to 5433) */
+  pgPort?: number;
+  /** UI serving mode (defaults based on NODE_ENV) */
+  uiMode?: "none" | "static" | "vite-dev";
+  /** Absolute path to pre-built UI dist directory */
+  uiDistPath?: string;
+}
+
+export interface ServerHandle {
+  /** Port the HTTP server is listening on */
+  port: number;
+  /** Full URL to the running server */
+  url: string;
+  /** Gracefully shut down the server and database */
+  shutdown: () => Promise<void>;
+}
+
 async function startEmbeddedPostgres(dataDir: string, port: number) {
   const { default: EmbeddedPostgres } = await import("embedded-postgres");
   const pg = new EmbeddedPostgres({
@@ -247,10 +269,10 @@ async function applyMigrations(connectionString: string) {
   logger.info("Database schema applied");
 }
 
-async function main() {
+export async function startServer(options?: StartServerOptions): Promise<ServerHandle> {
   const config = loadConfig();
-  const pgPort = 5433;
-  const dataDir = resolve(process.cwd(), "postgres-data");
+  const pgPort = options?.pgPort ?? 5433;
+  const dataDir = options?.dataDir ?? resolve(process.cwd(), "postgres-data");
 
   // Start embedded PostgreSQL
   const pg = await startEmbeddedPostgres(dataDir, pgPort);
@@ -263,50 +285,74 @@ async function main() {
   const db = createDb(connectionString);
 
   // Detect available port
-  const port = await detectPort(config.port);
+  const port = await detectPort(options?.port ?? config.port);
 
-  // Create Express app with Vite dev mode
-  const uiMode = config.nodeEnv === "production" ? "static" : "vite-dev";
-  const app = await createApp(db, { uiMode, serverPort: port });
+  // Create Express app
+  const uiMode = options?.uiMode ?? (config.nodeEnv === "production" ? "static" : "vite-dev");
+  const app = await createApp(db, {
+    uiMode,
+    serverPort: port,
+    uiDistPath: options?.uiDistPath,
+  });
 
   // Create HTTP server and attach WebSocket
   const server = createServer(app);
   setupWebSocketServer(server);
 
-  const hasApiKey = !!config.anthropicApiKey;
+  return new Promise((resolveHandle) => {
+    server.listen(port, () => {
+      logger.info({ port, uiMode }, "Newsdesk server started");
+      resolveHandle({
+        port,
+        url: `http://localhost:${port}`,
+        shutdown: async () => {
+          logger.info("Shutting down...");
+          server.close();
+          await pg.stop();
+        },
+      });
+    });
+  });
+}
 
-  server.listen(port, () => {
-    logger.info(`
+// CLI entry point — only runs when executed directly
+const isCLI = process.argv[1] && (
+  process.argv[1].endsWith("index.ts") ||
+  process.argv[1].endsWith("index.js")
+);
+
+if (isCLI) {
+  startServer()
+    .then((handle) => {
+      const config = loadConfig();
+      const hasApiKey = !!config.anthropicApiKey;
+
+      logger.info(`
 
   ┌─────────────────────────────────────────┐
   │                                         │
   │   NEWSDESK                              │
   │   AI Newsroom Orchestration             │
   │                                         │
-  │   API:  http://localhost:${port}          │
-  │   UI:   http://localhost:${port}          │
+  │   API:  http://localhost:${handle.port}          │
+  │   UI:   http://localhost:${handle.port}          │
   │                                         │
   │   Orchestrator: POST /api/orchestrator  │
   │   Claude API:   ${hasApiKey ? "configured ✓" : "not set (dry-run only)"}         │
   │                                         │
   └─────────────────────────────────────────┘
 
-    `);
-  });
+      `);
 
-  // Graceful shutdown
-  const shutdown = async () => {
-    logger.info("Shutting down...");
-    server.close();
-    await pg.stop();
-    process.exit(0);
-  };
-
-  process.on("SIGINT", shutdown);
-  process.on("SIGTERM", shutdown);
+      const shutdown = async () => {
+        await handle.shutdown();
+        process.exit(0);
+      };
+      process.on("SIGINT", shutdown);
+      process.on("SIGTERM", shutdown);
+    })
+    .catch((err) => {
+      console.error("Fatal error:", err);
+      process.exit(1);
+    });
 }
-
-main().catch((err) => {
-  console.error("Fatal error:", err);
-  process.exit(1);
-});
